@@ -25,7 +25,7 @@ class Enemy(pygame.sprite.Sprite):
                 random.randint(0, SCREEN_HEIGHT)
             )
         )
-        self.speed = 5 + self.additional_speed   # random.randint(7 + self.additional_speed, 13 + self.additional_speed)
+        self.speed = random.randint(5 + self.additional_speed, 10 + self.additional_speed)
 
     def update(self):
         self.rect.move_ip(-self.speed, 0)

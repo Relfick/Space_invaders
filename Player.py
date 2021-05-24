@@ -18,6 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.image.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.image.get_rect()
         self.flight_mode = 'r'
+        self.speed = 5
 
     def change_image(self, image_name):
         tmp_rect = self.rect.copy()
@@ -38,7 +39,7 @@ class Player(pygame.sprite.Sprite):
                     self.flight_mode = 'u'
                     self.change_image('jetm40.png')
 
-            self.rect.move_ip(0, -6)
+            self.rect.move_ip(0, -self.speed)
             if self.rect.top < 0:
                 self.rect.top = 0
 
@@ -52,7 +53,7 @@ class Player(pygame.sprite.Sprite):
                     self.flight_mode = 'd'
                     self.change_image('jet40.png')
 
-            self.rect.move_ip(0, 6)
+            self.rect.move_ip(0, self.speed)
             if self.rect.bottom > SCREEN_HEIGHT:
                 self.rect.bottom = SCREEN_HEIGHT
 
@@ -62,7 +63,7 @@ class Player(pygame.sprite.Sprite):
                     self.flight_mode = 'r'
                     self.change_image('jet.png')
 
-            self.rect.move_ip(-6, 0)
+            self.rect.move_ip(-self.speed, 0)
             if self.rect.left < 0:
                 self.rect.left = 0
 
@@ -72,7 +73,7 @@ class Player(pygame.sprite.Sprite):
                     self.flight_mode = 'r'
                     self.change_image('jet.png')
 
-            self.rect.move_ip(6, 0)
+            self.rect.move_ip(self.speed, 0)
             if self.rect.right > SCREEN_WIDTH:
                 self.rect.right = SCREEN_WIDTH
 
