@@ -9,6 +9,17 @@ from Explosion import Explosion
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
+font_name = pygame.font.match_font('arial')
+
+
+def draw_score(surf, text, size, x, y):
+    font = pygame.font.Font(font_name, size)
+    text_surface = font.render(text, True, (0, 0, 0))
+    text_rect = text_surface.get_rect()
+    text_rect.midright = (x, y)
+    surf.blit(text_surface, text_rect)
+
+
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -19,6 +30,7 @@ pygame.time.set_timer(ADDENEMY, 500)
 ADDCLOUD = pygame.USEREVENT + 2
 pygame.time.set_timer(ADDCLOUD, 1000)
 
+score = 0
 player = Player()
 enemies = pygame.sprite.Group()
 clouds = pygame.sprite.Group()
@@ -61,8 +73,8 @@ while running:
 
     screen.fill((135, 206, 251))
 
-    for entity in all_sprites:
-        screen.blit(entity.surf, entity.rect)
+    all_sprites.draw(screen)
+    draw_score(screen, str(score), 25, SCREEN_WIDTH - 30, 30)
 
     if pygame.sprite.spritecollideany(player, enemies):
         player.kill()
@@ -70,16 +82,14 @@ while running:
 
     for enemy in enemies:
         collided = pygame.sprite.groupcollide(weapons, enemies, True, True)
-        if (type(collided) == dict):
+        if type(collided) == dict:
             for collided_weapon, _ in collided.items():
                 explosion = Explosion(collided_weapon.rect)
                 explosions.add(explosion)
                 all_sprites.add(explosion)
-        # for killer, killed in collided:
-        #     for killed_one in killed:
-        #         killed_one.kill()
-        #     killer.kill()
-
+                score += 1
+                if score % 5 == 0:
+                    Enemy.additional_speed += 5
 
     pygame.display.flip()
     clock.tick(60)

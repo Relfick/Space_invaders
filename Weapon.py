@@ -13,9 +13,9 @@ SCREEN_WIDTH = 800
 class Weapon(pygame.sprite.Sprite):
     def __init__(self, player_rect: pygame.Rect):
         super(Weapon, self).__init__()
-        self.surf = pygame.image.load("weapon.png").convert()
-        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
-        self.rect = self.surf.get_rect(
+        self.image = pygame.image.load("weapon.png").convert()
+        self.image.set_colorkey((0, 0, 0), RLEACCEL)
+        self.rect = self.image.get_rect(
             center=player_rect.center
         )
         self.rect.move_ip(30, 0)

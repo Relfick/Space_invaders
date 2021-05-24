@@ -13,17 +13,19 @@ SCREEN_HEIGHT = 600
 
 
 class Enemy(pygame.sprite.Sprite):
+    additional_speed = 0
+
     def __init__(self):
         super(Enemy, self).__init__()
-        self.surf = pygame.image.load("missile.png").convert()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
-        self.rect = self.surf.get_rect(
+        self.image = pygame.image.load("missile.png").convert()
+        self.image.set_colorkey((255, 255, 255), RLEACCEL)
+        self.rect = self.image.get_rect(
             center=(
                 random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
                 random.randint(0, SCREEN_HEIGHT)
             )
         )
-        self.speed = random.randint(5, 20)
+        self.speed = 5 + self.additional_speed   # random.randint(7 + self.additional_speed, 13 + self.additional_speed)
 
     def update(self):
         self.rect.move_ip(-self.speed, 0)

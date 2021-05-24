@@ -5,12 +5,12 @@ from pygame.locals import (
 
 
 class Explosion(pygame.sprite.Sprite):
-    def __init__(self, exlposion_rect):
+    def __init__(self, explosion_rect):
         super(Explosion, self).__init__()
-        self.surf = pygame.image.load("explosion.png").convert()
-        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
-        self.rect = self.surf.get_rect(
-            center=exlposion_rect.center
+        self.image = pygame.image.load("explosion.png").convert()
+        self.image.set_colorkey((0, 0, 0), RLEACCEL)
+        self.rect = self.image.get_rect(
+            center=explosion_rect.center
         )
 
     def update(self):
