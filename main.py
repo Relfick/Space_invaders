@@ -4,6 +4,7 @@ from Player import Player
 from Enemy import Enemy
 from Cloud import Cloud
 from Weapon import Weapon
+from Explosion import Explosion
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -22,6 +23,7 @@ player = Player()
 enemies = pygame.sprite.Group()
 clouds = pygame.sprite.Group()
 weapons = pygame.sprite.Group()
+explosions = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
 
@@ -55,6 +57,7 @@ while running:
     enemies.update()
     clouds.update()
     weapons.update()
+    explosions.update()
 
     screen.fill((135, 206, 251))
 
@@ -66,7 +69,12 @@ while running:
         running = False
 
     for enemy in enemies:
-        pygame.sprite.groupcollide(weapons, enemies, True, True)
+        collided = pygame.sprite.groupcollide(weapons, enemies, True, True)
+        if (type(collided) == dict):
+            for collided_weapon, _ in collided.items():
+                explosion = Explosion(collided_weapon.rect)
+                explosions.add(explosion)
+                all_sprites.add(explosion)
         # for killer, killed in collided:
         #     for killed_one in killed:
         #         killed_one.kill()
