@@ -19,13 +19,18 @@ def draw_text(surf, text, size, x, y):
     text_rect.midright = (x, y)
     surf.blit(text_surface, text_rect)
 
+
 def show_go_screen():
+    for i in range(3):
+        screen.fill((135, 206, 251))
+        draw_text(screen, "Осталось: " + str(3 - i), 22,
+                  SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT / 2)
+        pygame.display.flip()
+        pygame.time.wait(1000)
+
     screen.fill((135, 206, 251))
-    draw_text(screen, "Arrow keys move, Space to fire", 22,
-              SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT / 2)
     draw_text(screen, "Press a key to begin", 18, SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT * 3 / 4)
     pygame.display.flip()
-    pygame.time.wait(1000)
     pygame.event.clear()
     waiting = True
     while waiting:
@@ -57,7 +62,7 @@ all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
 
 running = True
-game_over = True
+game_over = False
 while running:
     if game_over:
         show_go_screen()

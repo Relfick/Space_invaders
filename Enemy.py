@@ -17,7 +17,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def __init__(self):
         super(Enemy, self).__init__()
-        self.image = pygame.image.load("missile.png").convert()
+        self.image = pygame.image.load("img/missile.png").convert()
         self.image.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.image.get_rect(
             center=(

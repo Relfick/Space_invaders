@@ -14,7 +14,7 @@ SCREEN_HEIGHT = 600
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.image = pygame.image.load("jet.png").convert()
+        self.image = pygame.image.load("img/jet.png").convert()
         self.image.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.image.get_rect()
         self.flight_mode = 'r'
