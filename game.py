@@ -9,19 +9,18 @@ from explosion import Explosion
 class Game:
     def __init__(self):
         self.score = 0
-        # self.players = []
-        # self.players.append(Player())
-        # self.players.append(Player())
-        # self.players.append(Player())
-        self.player = Player()
+        self.players = pygame.sprite.Group()
+        for _ in range(8):
+            self.players.add(Player())
         self.enemies = pygame.sprite.Group()
         self.clouds = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
-        # for player in self.players:
-        self.all_sprites.add(self.player)
+        for player in self.players:
+            self.all_sprites.add(player)
         Enemy.additional_speed = 0
+        self.max_num_enemies = 5
 
     def shoot(self):
         new_weapon = Bullet(self.player.rect)
@@ -29,7 +28,7 @@ class Game:
         self.all_sprites.add(new_weapon)
 
     def spawn_enemy(self):
-        if self.enemies.__len__() < 3:
+        if self.enemies.__len__() < self.max_num_enemies:
             new_enemy = Enemy()
             self.enemies.add(new_enemy)
             self.all_sprites.add(new_enemy)
@@ -39,12 +38,14 @@ class Game:
         self.clouds.add(new_cloud)
         self.all_sprites.add(new_cloud)
 
-    def update(self, pressed_keys):
-        self.player.update(pressed_keys)
+    def update(self):
         self.enemies.update()
         self.clouds.update()
         self.bullets.update()
         self.explosions.update()
+
+    def update_player(self, player, pressed_keys):
+        player.update(pressed_keys)
 
     def get_all_sprites(self):
         return self.all_sprites
@@ -52,12 +53,24 @@ class Game:
     def get_score(self):
         return self.score
 
-    def kill_player(self):
-        self.player.kill()
+    def get_players(self):
+        return self.players
+
+    def get_max_num_enemies(self):
+        return self.max_num_enemies
+
+    # def kill_player(self):
+    #     self.player.kill()
 
     def player_collide_enemy(self):
-        if pygame.sprite.spritecollideany(self.player, self.enemies):
-            self.player.kill()
+        # pygame.sprite.groupcollide(self.players, self.enemies, True, True)
+        # if self.players.__len__() == 0:
+        #     return True
+        # return False
+        for player in self.players:
+            if pygame.sprite.spritecollideany(player, self.enemies):
+                player.kill()
+        if self.players.__len__() == 0:
             return True
         return False
 
@@ -75,9 +88,5 @@ class Game:
 
     def get_enemies_centers(self):
         return [x.rect.center for x in self.enemies]
-
-    def get_player_center(self):
-        center = self.player.rect.center
-        return [center[0], center[1]]
 
 

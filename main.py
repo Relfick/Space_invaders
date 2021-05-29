@@ -1,6 +1,6 @@
 import pygame
 from game import Game
-from aibot import AI
+from aibot import Bot
 import torch
 
 SCREEN_WIDTH = 800
@@ -48,20 +48,28 @@ def show_continue_screen():
                 waiting = False
 
 
-def bot_predict():
+def bot_predict(bot):
     enemies_centers = game.get_enemies_centers()
-    player_center = game.get_player_center()
-    if len(enemies_centers) < 3:
-        while len(enemies_centers) < 3:
+    if len(enemies_centers) < max_num_enemies:
+        while len(enemies_centers) < max_num_enemies:
             enemies_centers.append((-100, -100))
+
     x_data = [item for t in enemies_centers for item in t]
+    player_center = bot.player.rect.center
+    player_center = [player_center[0], player_center[1]]
     x_data = player_center + x_data
     predictions = bot.predict(torch.Tensor(x_data))
-    bot_commands = {
-        pygame.K_RIGHT: predictions[0], pygame.K_LEFT: not predictions[0],
-        pygame.K_UP: predictions[1], pygame.K_DOWN: not predictions[1]
+    bot_comms = {
+        pygame.K_RIGHT: False, pygame.K_LEFT: False,
+        pygame.K_UP: False, pygame.K_DOWN: False
     }
-    return bot_commands
+    if predictions[0]:
+        bot_comms[pygame.K_RIGHT] = predictions[2]
+        bot_comms[pygame.K_LEFT] = not predictions[2]
+    if predictions[1]:
+        bot_comms[pygame.K_UP] = predictions[3]
+        bot_comms[pygame.K_DOWN] = not predictions[3]
+    return bot_comms
 
 
 ADDENEMY = pygame.USEREVENT + 1
@@ -70,7 +78,10 @@ ADDCLOUD = pygame.USEREVENT + 2
 pygame.time.set_timer(ADDCLOUD, 1000)
 
 game = Game()
-bot = AI()
+max_num_enemies = game.get_max_num_enemies()
+bots = []
+for player in game.get_players():
+    bots.append(Bot(player, max_num_enemies))
 
 running = True
 game_over = False
@@ -79,6 +90,9 @@ while running:
         show_continue_screen()
         game_over = False
         game = Game()
+        bots = []
+        for player in game.get_players():
+            bots.append(Bot(player, max_num_enemies))
 
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -99,8 +113,10 @@ while running:
 
     pressed_keys = pygame.key.get_pressed()
 
-    bot_commands = bot_predict()
-    game.update(bot_commands)
+    for bot in bots:
+        bot_commands = bot_predict(bot)
+        bot.player.update(bot_commands)
+    game.update()
 
     draw_screen('Score: ' + str(game.get_score()))
 
