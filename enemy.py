@@ -2,10 +2,6 @@ import pygame.sprite
 import random
 from pygame.locals import (
     RLEACCEL,
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
 )
 
 SCREEN_WIDTH = 800
