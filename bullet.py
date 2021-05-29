@@ -10,9 +10,9 @@ from pygame.locals import (
 SCREEN_WIDTH = 800
 
 
-class Weapon(pygame.sprite.Sprite):
+class Bullet(pygame.sprite.Sprite):
     def __init__(self, player_rect: pygame.Rect):
-        super(Weapon, self).__init__()
+        super(Bullet, self).__init__()
         self.image = pygame.image.load("img/weapon.png").convert()
         self.image.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.image.get_rect(

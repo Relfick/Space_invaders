@@ -1,14 +1,12 @@
 import pygame
-from Player import Player
-from Enemy import Enemy
-from Cloud import Cloud
-from Weapon import Weapon
-from Explosion import Explosion
+from game import Game
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-
 font_name = pygame.font.match_font('arial')
+pygame.init()
+clock = pygame.time.Clock()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 def draw_text(surf, text, size, x, y):
@@ -20,10 +18,17 @@ def draw_text(surf, text, size, x, y):
     surf.blit(text_surface, text_rect)
 
 
-def show_go_screen():
-    for i in range(3):
+def draw_screen(score):
+    screen.fill((135, 206, 251))
+    game.get_all_sprites().draw(screen)
+    draw_text(screen, str(score), 25, SCREEN_WIDTH - 30, 30)
+
+
+def show_continue_screen():
+    secs_to_wait = 2
+    for i in range(secs_to_wait):
         screen.fill((135, 206, 251))
-        draw_text(screen, "Осталось: " + str(3 - i), 22,
+        draw_text(screen, "Осталось: " + str(secs_to_wait - i), 22,
                   SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT / 2)
         pygame.display.flip()
         pygame.time.wait(1000)
@@ -42,40 +47,20 @@ def show_go_screen():
                 waiting = False
 
 
-pygame.init()
-clock = pygame.time.Clock()
-
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
 ADDENEMY = pygame.USEREVENT + 1
 pygame.time.set_timer(ADDENEMY, 500)
 ADDCLOUD = pygame.USEREVENT + 2
 pygame.time.set_timer(ADDCLOUD, 1000)
 
-score = 0
-player = Player()
-enemies = pygame.sprite.Group()
-clouds = pygame.sprite.Group()
-weapons = pygame.sprite.Group()
-explosions = pygame.sprite.Group()
-all_sprites = pygame.sprite.Group()
-all_sprites.add(player)
+game = Game()
 
 running = True
 game_over = False
 while running:
     if game_over:
-        show_go_screen()
+        show_continue_screen()
         game_over = False
-        score = 0
-        player = Player()
-        enemies = pygame.sprite.Group()
-        clouds = pygame.sprite.Group()
-        weapons = pygame.sprite.Group()
-        explosions = pygame.sprite.Group()
-        all_sprites = pygame.sprite.Group()
-        all_sprites.add(player)
-    game_over = False
+        game = Game()
 
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -83,49 +68,25 @@ while running:
                 running = False
 
             elif event.key == pygame.K_SPACE:
-                new_weapon = Weapon(player.rect)
-                weapons.add(new_weapon)
-                all_sprites.add(new_weapon)
+                game.shoot()
 
         elif event.type == pygame.QUIT:
             running = False
 
         elif event.type == ADDENEMY:
-            new_enemy = Enemy()
-            enemies.add(new_enemy)
-            all_sprites.add(new_enemy)
+            game.spawn_enemy()
 
         elif event.type == ADDCLOUD:
-            new_cloud = Cloud()
-            clouds.add(new_cloud)
-            all_sprites.add(new_cloud)
+            game.spawn_cloud()
 
-    pressed_keys = pygame.key.get_pressed()
-    player.update(pressed_keys)
-    enemies.update()
-    clouds.update()
-    weapons.update()
-    explosions.update()
+    game.update(pygame.key.get_pressed())
 
-    screen.fill((135, 206, 251))
+    draw_screen(game.get_score())
 
-    all_sprites.draw(screen)
-    draw_text(screen, str(score), 25, SCREEN_WIDTH - 30, 30)
-
-    if pygame.sprite.spritecollideany(player, enemies):
-        player.kill()
+    if game.player_collide_enemy():
         game_over = True
 
-    for enemy in enemies:
-        collided = pygame.sprite.groupcollide(weapons, enemies, True, True)
-        if type(collided) == dict:
-            for collided_weapon, _ in collided.items():
-                explosion = Explosion(collided_weapon.rect)
-                explosions.add(explosion)
-                all_sprites.add(explosion)
-                score += 1
-                if score % 5 == 0:
-                    Enemy.additional_speed += 3
+    game.bullet_collide_enemy()
 
     pygame.display.flip()
     clock.tick(60)

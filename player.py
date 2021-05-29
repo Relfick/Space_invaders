@@ -33,11 +33,11 @@ class Player(pygame.sprite.Sprite):
             if keys_pressed[K_RIGHT] or keys_pressed[K_LEFT]:
                 if self.flight_mode != 'ru':
                     self.flight_mode = 'ru'
-                    self.change_image('jetm20.png')
+                    self.change_image('img/jetm20.png')
             else:
                 if self.flight_mode != 'u':
                     self.flight_mode = 'u'
-                    self.change_image('jetm40.png')
+                    self.change_image('img/jetm40.png')
 
             self.rect.move_ip(0, -self.speed)
             if self.rect.top < 0:
@@ -47,11 +47,11 @@ class Player(pygame.sprite.Sprite):
             if keys_pressed[K_RIGHT] or keys_pressed[K_LEFT]:
                 if self.flight_mode != 'rd':
                     self.flight_mode = 'rd'
-                    self.change_image('jet20.png')
+                    self.change_image('img/jet20.png')
             else:
                 if self.flight_mode != 'd':
                     self.flight_mode = 'd'
-                    self.change_image('jet40.png')
+                    self.change_image('img/jet40.png')
 
             self.rect.move_ip(0, self.speed)
             if self.rect.bottom > SCREEN_HEIGHT:
@@ -61,7 +61,7 @@ class Player(pygame.sprite.Sprite):
             if not keys_pressed[K_DOWN] and not keys_pressed[K_UP]:
                 if self.flight_mode != 'r':
                     self.flight_mode = 'r'
-                    self.change_image('jet.png')
+                    self.change_image('img/jet.png')
 
             self.rect.move_ip(-self.speed, 0)
             if self.rect.left < 0:
@@ -71,7 +71,7 @@ class Player(pygame.sprite.Sprite):
             if not keys_pressed[K_DOWN] and not keys_pressed[K_UP]:
                 if self.flight_mode != 'r':
                     self.flight_mode = 'r'
-                    self.change_image('jet.png')
+                    self.change_image('img/jet.png')
 
             self.rect.move_ip(self.speed, 0)
             if self.rect.right > SCREEN_WIDTH:
@@ -80,4 +80,4 @@ class Player(pygame.sprite.Sprite):
         if sum(keys_pressed) == 0:
             if self.flight_mode != 'r':
                 self.flight_mode = 'r'
-                self.change_image('jet.png')
+                self.change_image('img/jet.png')
