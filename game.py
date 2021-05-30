@@ -4,13 +4,15 @@ from enemy import Enemy
 from cloud import Cloud
 from bullet import Bullet
 from explosion import Explosion
+import time
 
 
 class Game:
     def __init__(self):
         self.score = 0
         self.players = pygame.sprite.Group()
-        for _ in range(8):
+        self.players_num = 8
+        for _ in range(self.players_num):
             self.players.add(Player())
         self.enemies = pygame.sprite.Group()
         self.clouds = pygame.sprite.Group()
@@ -20,7 +22,8 @@ class Game:
         for player in self.players:
             self.all_sprites.add(player)
         Enemy.additional_speed = 0
-        self.max_num_enemies = 5
+        self.max_num_enemies = 6
+        self.start_time = time.perf_counter()
 
     def shoot(self):
         new_weapon = Bullet(self.player.rect)
@@ -44,8 +47,8 @@ class Game:
         self.bullets.update()
         self.explosions.update()
 
-    def update_player(self, player, pressed_keys):
-        player.update(pressed_keys)
+    # def update_player(self, player, pressed_keys):
+    #     player.update(pressed_keys)
 
     def get_all_sprites(self):
         return self.all_sprites
@@ -69,7 +72,9 @@ class Game:
         # return False
         for player in self.players:
             if pygame.sprite.spritecollideany(player, self.enemies):
+                player.set_time_lived(time.perf_counter() - self.start_time)
                 player.kill()
+
         if self.players.__len__() == 0:
             return True
         return False

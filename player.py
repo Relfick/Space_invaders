@@ -19,6 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.flight_mode = 'r'
         self.speed = 5
+        self.time_lived = 0
 
     def change_image(self, image_name):
         tmp_rect = self.rect.copy()
@@ -81,3 +82,6 @@ class Player(pygame.sprite.Sprite):
             if self.flight_mode != 'r':
                 self.flight_mode = 'r'
                 self.change_image('img/jet.png')
+
+    def set_time_lived(self, time):
+        self.time_lived = time

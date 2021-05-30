@@ -17,7 +17,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.image.get_rect(
             center=(
-                random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
+                random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 50),
                 random.randint(0, SCREEN_HEIGHT)
             )
         )

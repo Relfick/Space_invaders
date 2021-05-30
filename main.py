@@ -1,6 +1,7 @@
 import pygame
 from game import Game
 from aibot import Bot
+from genetic import Genetic
 import torch
 
 SCREEN_WIDTH = 800
@@ -26,7 +27,7 @@ def draw_screen(score: str):
 
 
 def show_continue_screen():
-    secs_to_wait = 2
+    secs_to_wait = 1
     for i in range(secs_to_wait):
         screen.fill((135, 206, 251))
         draw_text(screen, "Осталось: " + str(secs_to_wait - i), 22,
@@ -38,14 +39,14 @@ def show_continue_screen():
     draw_text(screen, "Press a key to begin", 18, SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT * 3 / 4)
     pygame.display.flip()
     pygame.event.clear()
-    waiting = True
-    while waiting:
-        clock.tick(60)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-            if event.type == pygame.KEYUP:
-                waiting = False
+    # waiting = True
+    # while waiting:
+    #     clock.tick(60)
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             pygame.quit()
+    #         if event.type == pygame.KEYUP:
+    #             waiting = False
 
 
 def bot_predict(bot):
@@ -72,8 +73,21 @@ def bot_predict(bot):
     return bot_comms
 
 
+def print_best_time():
+    max1, max2 = 0, 0
+    for bot in bots:
+        lived = bot.player.time_lived
+        if lived > max1:
+            max2 = max1
+            max1 = lived
+        elif lived > max2:
+            max2 = lived
+
+    print(f"{max1} | {max2}")
+
+
 ADDENEMY = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDENEMY, 500)
+pygame.time.set_timer(ADDENEMY, 100)
 ADDCLOUD = pygame.USEREVENT + 2
 pygame.time.set_timer(ADDCLOUD, 1000)
 
@@ -81,18 +95,25 @@ game = Game()
 max_num_enemies = game.get_max_num_enemies()
 bots = []
 for player in game.get_players():
-    bots.append(Bot(player, max_num_enemies))
+    bots.append(Bot(max_num_enemies, player))
 
 running = True
 game_over = False
 while running:
     if game_over:
         show_continue_screen()
+        print_best_time()
         game_over = False
+        bots = Genetic(bots, game.get_max_num_enemies()).get_bots()
         game = Game()
-        bots = []
-        for player in game.get_players():
-            bots.append(Bot(player, max_num_enemies))
+        players = game.get_players()
+        i = 0
+        for player in players:
+            bots[i].set_player(player)
+            i += 1
+        # bots = []
+        # for player in game.get_players():
+        #     bots.append(Bot(player, max_num_enemies))
 
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
