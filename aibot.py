@@ -17,11 +17,13 @@ class Bot:
     def get_player(self):
         return self.player
 
-    def set_net_parameters(self, weight1, bias1, weight2, bias2):
-        self.net.fc1.weight = torch.nn.Parameter(weight1)
-        self.net.fc1.bias = torch.nn.Parameter(bias1)
-        self.net.fc2.weight = torch.nn.Parameter(weight2)
-        self.net.fc2.bias = torch.nn.Parameter(bias2)
+    def set_net_parameters(self, weights, biases):
+        for i in range(len(self.net.layers)):
+            self.net.layers[i].weight = torch.nn.Parameter(weights[i])
+            self.net.layers[i].bias = torch.nn.Parameter(biases[i])
 
     def set_player(self, player):
         self.player = player
+
+    def get_net_structure(self):
+        return self.net.get_structure()

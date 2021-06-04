@@ -11,7 +11,7 @@ class Game:
     def __init__(self):
         self.score = 0
         self.players = pygame.sprite.Group()
-        self.players_num = 8
+        self.players_num = 20
         for _ in range(self.players_num):
             self.players.add(Player())
         self.enemies = pygame.sprite.Group()
@@ -74,6 +74,7 @@ class Game:
             if pygame.sprite.spritecollideany(player, self.enemies):
                 player.set_time_lived(time.perf_counter() - self.start_time)
                 player.kill()
+                self.score += 1
 
         if self.players.__len__() == 0:
             return True

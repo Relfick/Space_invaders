@@ -51,15 +51,27 @@ def show_continue_screen():
 
 def bot_predict(bot):
     enemies_centers = game.get_enemies_centers()
+
+    # количество созданных врагов не всегда равно max_num_enemies
     if len(enemies_centers) < max_num_enemies:
         while len(enemies_centers) < max_num_enemies:
             enemies_centers.append((-100, -100))
 
-    x_data = [item for t in enemies_centers for item in t]
     player_center = bot.player.rect.center
     player_center = [player_center[0], player_center[1]]
+
+    # x_data: [x1, y1, x2, y2, ..., x_n_enemies, y_n_enemies]
+    # x_data = [item for t in enemies_centers for item in t]
+
+    # x_data: [x1, x2, ..., x_n_enemies, y1, y2, ..., y_n_enemies]
+    x_coords = [item[0] - player_center[0] for item in enemies_centers]
+    y_coords = [item[1] - player_center[1] for item in enemies_centers]
+    x_data = x_coords + y_coords
     x_data = player_center + x_data
+
+    # predictions: [move x ?, move y ?, move right ?, move left ? ]
     predictions = bot.predict(torch.Tensor(x_data))
+
     bot_comms = {
         pygame.K_RIGHT: False, pygame.K_LEFT: False,
         pygame.K_UP: False, pygame.K_DOWN: False
@@ -84,6 +96,7 @@ def print_best_time():
             max2 = lived
 
     print(f"{max1} | {max2}")
+    return (max1 + max2) / 2
 
 
 ADDENEMY = pygame.USEREVENT + 1
@@ -102,9 +115,10 @@ game_over = False
 while running:
     if game_over:
         show_continue_screen()
-        print_best_time()
+        average_best_time = print_best_time()
         game_over = False
-        bots = Genetic(bots, game.get_max_num_enemies()).get_bots()
+
+        bots = Genetic(bots, average_best_time).get_bots()
         game = Game()
         players = game.get_players()
         i = 0
@@ -147,4 +161,4 @@ while running:
     game.bullet_collide_enemy()
 
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(240)
