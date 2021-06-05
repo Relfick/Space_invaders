@@ -12,7 +12,7 @@ class Game:
     def __init__(self):
         self.score = 0
         self.players = pygame.sprite.Group()
-        self.players_num = 30
+        self.players_num = 25
         for _ in range(self.players_num):
             self.players.add(Player())
         self.enemies = pygame.sprite.Group()

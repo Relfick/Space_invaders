@@ -3,8 +3,14 @@ import random
 
 
 class Genetic:
-    def __init__(self, bots: list):
+    mutation_prob = 3
+
+    def __init__(self, bots: list, escalate_mutations, reset_mutations):
         self.bots = bots
+        if escalate_mutations:
+            self.mutation_prob += 2
+        if reset_mutations:
+            self.mutation_prob = 3
         self.fitnesses = [bot.player.time_lived for bot in self.bots]
         self.n_input, self.n_hidden_1, self.n_hidden_2, self.n_output, self.layers_num = self.bots[0].get_net_structure()
         self.neurons_num_in_layers = [self.n_input, self.n_hidden_1, self.n_hidden_2, self.n_output]
@@ -90,12 +96,11 @@ class Genetic:
                 self.mutate_genome(genome[i])
 
     def mutate_genome(self, genome):
-        mutation_prob = 3
         for i in range(genome.shape[0]):
             max_gen = genome[i].max()
             min_gen = genome[i].min()
             for j in range(genome.shape[1]):
-                if random.random() * 100 < mutation_prob:
+                if random.random() * 100 < self.mutation_prob:
                     genome[i][j] = self.mutation_fun2(max_gen, min_gen, genome[i][j])
 
     def mutation_fun1(self, max_gen, min_gen, gen):

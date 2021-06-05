@@ -17,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load("img/jet.png").convert()
         self.image.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.image.get_rect()
+        self.rect.bottomleft = (0, SCREEN_HEIGHT / 2)
         self.flight_mode = 'r'
         self.speed = 5
         self.time_lived = 0

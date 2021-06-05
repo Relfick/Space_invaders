@@ -4,6 +4,7 @@ from aibot import Bot
 from genetic import Genetic
 import torch
 import numpy as np
+from matplotlib import pyplot as plt
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -11,6 +12,10 @@ font_name = pygame.font.match_font('arial')
 pygame.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+best_times = []
+last_average = 0
+escalate_mutations = False
+reset_mutations = False
 
 
 def draw_text(surf, text, size, x, y):
@@ -94,7 +99,7 @@ def bot_predict(bot):
     return bot_comms
 
 
-def print_best_time():
+def store_best_time():
     max1, max2 = 0, 0
     for bot in bots:
         lived = bot.player.time_lived
@@ -105,6 +110,7 @@ def print_best_time():
             max2 = lived
 
     print(f"{max1} | {max2}")
+    best_times.append((max1 + max2) / 2)
 
 
 ADDENEMY = pygame.USEREVENT + 1
@@ -123,10 +129,24 @@ game_over = False
 while running:
     if game_over:
         show_continue_screen()
-        print_best_time()
+        store_best_time()
         game_over = False
 
-        bots = Genetic(bots).get_bots()
+        if len(best_times) % 10 == 1:
+            curr_average = sum(best_times[-10:]) / 10
+            if curr_average - last_average < 2:
+                escalate_mutations = True
+                reset_mutations = False
+            else:
+                reset_mutations = True
+            last_average = curr_average
+
+            plt.plot(best_times)
+            plt.show()
+
+        bots = Genetic(bots, escalate_mutations, reset_mutations).get_bots()
+        escalate_mutations = False
+
         game = Game()
         players = game.get_players()
         i = 0
@@ -141,12 +161,15 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+                plt.plot(best_times)
+                plt.show()
 
             elif event.key == pygame.K_SPACE:
                 game.shoot()
 
         elif event.type == pygame.QUIT:
             running = False
+
 
         elif event.type == ADDENEMY:
             game.spawn_enemy()

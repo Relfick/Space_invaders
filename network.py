@@ -5,8 +5,8 @@ class Network(torch.nn.Module):
     def __init__(self, max_num_enemies):
         super(Network, self).__init__()
         self.n_inputs = max_num_enemies * 2 + 1
-        self.n_hidden_1 = 4 * self.n_inputs
-        self.n_hidden_2 = 3 * self.n_inputs
+        self.n_hidden_1 = 10 * self.n_inputs
+        self.n_hidden_2 = 5 * self.n_inputs
         self.n_outputs = 2
         self.fc1 = torch.nn.Linear(self.n_inputs, self.n_hidden_1)
         self.ac1 = torch.nn.Sigmoid()
