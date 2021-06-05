@@ -3,6 +3,7 @@ from game import Game
 from aibot import Bot
 from genetic import Genetic
 import torch
+import numpy as np
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -49,7 +50,7 @@ def show_continue_screen():
     #             waiting = False
 
 
-def bot_predict(bot):
+def process_input_data():
     enemies_centers = game.get_enemies_centers()
 
     # количество созданных врагов не всегда равно max_num_enemies
@@ -59,29 +60,37 @@ def bot_predict(bot):
 
     player_center = bot.player.rect.center
     player_center = [player_center[0], player_center[1]]
+    player_center_y = [player_center[0]]
 
     # x_data: [x1, y1, x2, y2, ..., x_n_enemies, y_n_enemies]
     # x_data = [item for t in enemies_centers for item in t]
 
-    # x_data: [x1, x2, ..., x_n_enemies, y1, y2, ..., y_n_enemies]
+    # x_data: [x1-сx, x2-сx, ..., x_n_enemies-сx, y1-сy, y2-сy, ..., y_n_enemies-сy]
     x_coords = [item[0] - player_center[0] for item in enemies_centers]
     y_coords = [item[1] - player_center[1] for item in enemies_centers]
-    x_data = x_coords + y_coords
-    x_data = player_center + x_data
 
-    # predictions: [move x ?, move y ?, move right ?, move left ? ]
-    predictions = bot.predict(torch.Tensor(x_data))
+    # нормализация
+    x_coords = list((np.array(x_coords) / SCREEN_WIDTH))
+    y_coords = list((np.array(y_coords) / SCREEN_HEIGHT))
+    player_center_y = list((np.array(player_center_y) / SCREEN_HEIGHT))
+    x_data = x_coords + y_coords
+    x_data = player_center_y + x_data
+    return x_data
+
+
+def bot_predict(bot):
+    input_data = process_input_data()
+
+    # predictions: [move y ?, move up ? ]
+    predictions = bot.predict(torch.Tensor(input_data))
 
     bot_comms = {
-        pygame.K_RIGHT: False, pygame.K_LEFT: False,
-        pygame.K_UP: False, pygame.K_DOWN: False
+        pygame.K_UP: False, pygame.K_DOWN: False,
+        pygame.K_LEFT: False, pygame.K_RIGHT: False
     }
     if predictions[0]:
-        bot_comms[pygame.K_RIGHT] = predictions[2]
-        bot_comms[pygame.K_LEFT] = not predictions[2]
-    if predictions[1]:
-        bot_comms[pygame.K_UP] = predictions[3]
-        bot_comms[pygame.K_DOWN] = not predictions[3]
+        bot_comms[pygame.K_UP] = predictions[1]
+        bot_comms[pygame.K_DOWN] = not predictions[1]
     return bot_comms
 
 
@@ -96,11 +105,10 @@ def print_best_time():
             max2 = lived
 
     print(f"{max1} | {max2}")
-    return (max1 + max2) / 2
 
 
 ADDENEMY = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDENEMY, 100)
+pygame.time.set_timer(ADDENEMY, 400)
 ADDCLOUD = pygame.USEREVENT + 2
 pygame.time.set_timer(ADDCLOUD, 1000)
 
@@ -115,10 +123,10 @@ game_over = False
 while running:
     if game_over:
         show_continue_screen()
-        average_best_time = print_best_time()
+        print_best_time()
         game_over = False
 
-        bots = Genetic(bots, average_best_time).get_bots()
+        bots = Genetic(bots).get_bots()
         game = Game()
         players = game.get_players()
         i = 0

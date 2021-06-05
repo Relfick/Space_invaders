@@ -3,7 +3,7 @@ import random
 
 
 class Genetic:
-    def __init__(self, bots: list, av_time_lived):
+    def __init__(self, bots: list):
         self.bots = bots
         self.fitnesses = [bot.player.time_lived for bot in self.bots]
         self.n_input, self.n_hidden_1, self.n_hidden_2, self.n_output, self.layers_num = self.bots[0].get_net_structure()
@@ -15,7 +15,6 @@ class Genetic:
         self.crossover()
         self.mutation()
         self.refresh_bots()
-
 
     def selection(self):
         self.bots.sort(key=lambda fit: fit.player.time_lived, reverse=True)
@@ -42,7 +41,7 @@ class Genetic:
             return
 
         self.boundaries = []
-        for n in self.neurons_num_in_layers[1:]: # 1: потому что инпут слой не учитывается
+        for n in self.neurons_num_in_layers[1:]:  # 1: потому что инпут слой не учитывается
             bound = (random.random() - 0.5) / 2 + 0.5
             bound = round(n * bound)
             self.boundaries.append(bound)
@@ -91,7 +90,7 @@ class Genetic:
                 self.mutate_genome(genome[i])
 
     def mutate_genome(self, genome):
-        mutation_prob = 10
+        mutation_prob = 3
         for i in range(genome.shape[0]):
             max_gen = genome[i].max()
             min_gen = genome[i].min()

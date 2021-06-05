@@ -5,13 +5,14 @@ from cloud import Cloud
 from bullet import Bullet
 from explosion import Explosion
 import time
+import random
 
 
 class Game:
     def __init__(self):
         self.score = 0
         self.players = pygame.sprite.Group()
-        self.players_num = 20
+        self.players_num = 30
         for _ in range(self.players_num):
             self.players.add(Player())
         self.enemies = pygame.sprite.Group()
@@ -32,7 +33,14 @@ class Game:
 
     def spawn_enemy(self):
         if self.enemies.__len__() < self.max_num_enemies:
-            new_enemy = Enemy()
+            rand_player = random.randint(0, self.players.__len__()-1)
+            i = 0
+            for player in self.players:
+                if i == rand_player:
+                    new_enemy = Enemy(player.rect.center[1])
+                    break
+                i += 1
+            # new_enemy = Enemy()
             self.enemies.add(new_enemy)
             self.all_sprites.add(new_enemy)
 
